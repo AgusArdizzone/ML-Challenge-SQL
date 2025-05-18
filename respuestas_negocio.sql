@@ -102,3 +102,17 @@ BEGIN
         COMMIT;
 END;
 /
+
+-- PLUS: podemos crear un job dentro de DBMS_SCHEDULER para que
+--       ejecute el procedimiento cada fin de día:
+
+BEGIN
+    DBMS_SCHEDULER.create_job (
+        job_name        => 'ITEM_HISTORY_DATA_LOAD_JOB',
+        job_type        => 'PLSQL_BLOCK',
+        job_action      => 'BEGIN ITEM_HISTORY_DATA_LOAD; END;',
+        start_date      => TRUNC(SYSDATE) + 1, -- Start tomorrow
+        repeat_interval  => 'FREQ=DAILY; BYHOUR=0; BYMINUTE=0; BYSECOND=0', -- Daily at midnight
+        enabled         => TRUE
+    );
+END;
